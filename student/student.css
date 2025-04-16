@@ -1,0 +1,352 @@
+/* General Reset */
+.content {
+    width: 50%; /* Covers half of the page */
+    margin: 50px auto; /* Centers the content */
+    flex-grow: 1;
+    background-color:  #e4d5f4;
+       padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+
+
+.content p {
+    font-size:   50px;
+    color: #333;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+/* Adding a smooth fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content {
+        width: 80%; /* Covers more space on smaller screens */
+        margin: 30px auto;
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e4d5f4;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #8631e2;
+    color: white;
+    padding: 20px;
+    height: 100%;
+}
+
+.sidebar h2 {
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #bb86f5;
+    color: #000000;
+    transform: scale(1.2);
+}
+
+/* Main Content */
+
+
+.content h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+/* Sections */
+
+.content section {
+    background-color: rgb(251, 245, 245);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px #8631e2;
+}
+
+.content section h2 {
+    margin-top: 0;
+}
+
+/* Dashboard Layout */
+.dashboard-panels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.left-panel {
+    width: 60%;
+}
+
+.right-panel {
+    width: 40%;
+}
+
+/* Stats Section */
+.stats-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.stats-card {
+    background-color: rgb(251, 245, 245);
+    border-radius: 8px;
+    padding: 20px;
+    width: 50%;
+    text-align: center;
+    margin: 0 auto 20px 10px; /* center horizontally */
+}
+
+.stats-card h3 {
+    font-size: 1.2rem;
+    color: black;
+}
+
+.stats-card p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Admin Details */
+.student-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(251, 245, 245);
+    text-align: center;
+}
+.dashboard-section {
+    display: flex;
+    justify-content: center;
+    padding-top: 30px; 
+    background-color: rgb(251, 245, 245);
+    text-align: center;
+    align-items: center;
+}
+
+#student-detail {
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #c38ffb;
+    color: white;
+}
+
+/* Form Layout - Horizontal */
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+label {
+    font-weight: bold;
+    min-width: 80px;
+}
+
+input, select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Buttons */
+button {
+    padding: 10px;
+    background: #0d16c0;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #0388e8;
+}
+
+/* Popup Message */
+.popup {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.popup.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-panels {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .left-panel, .right-panel {
+        width: 90%;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+#view-attendance{
+    margin-bottom: 10px;
+}
+
+.stats-cardd {
+    border: 1px solid #ccc;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+}
+
+.stats-cardd h3 {
+    text-align: center;
+}
+
+.details-container {
+    display: table;
+    width: 100%;
+    margin-top: 15px;
+
+}
+
+.details-container p {
+    font-size:large;
+    display: table-row;
+    font-weight: normal;
+    text-align: left;
+    padding-bottom: 30px;
+
+}
+
+.details-container p strong {
+    font-size:larger ;
+    display: table-cell;
+    padding-right: 10px;
+    font-weight: bold;
+}
+
+.details-container p span {
+    display: table-cell;
+}
+
+@media (max-width: 768px) {
+    .details-container {
+        display: block; /* Stack the details on smaller screens */
+    }
+    .details-container p {
+        display: block; /* Make each row block level */
+        margin-bottom: 30px;
+    }
+    .details-container p strong {
+        display: inline-block; /* Make the label inline */
+        margin-right: 10px;
+    }
+}
+
+#overallAttendance {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    background-color: #ecf0f1;
+    padding: 12px 16px;
+    border-left: 5px solid #3498db;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+#overallAttendance:hover {
+    background-color: #dceefc;
+    border-left-color: #2980b9;
+}
+.student-details-container{
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets1/logo.png" type="image/png">
+
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Student Management System</h2>
+        <h3>Signup Page</h3>
+        <form id="signupForm">
+            <select id="signupUserType" required>
+                <option value="" disabled selected>Select user</option>
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+            </select>
+            <input type="text" id="signupUsername" placeholder="Username" required>
+            <input type="email" id="signupEmail" placeholder="Email" required>
+            <input type="password" id="signupPassword" placeholder="Password" required>
+            <div class="btn-group">
+                <button type="submit">Signup</button>
+                <button type="button" id="closeSignupBtn">Close</button>
+            </div>
+            <a href="javascript:void(0);" class="switch-link" onclick="window.location.href='index.html'">Switch to Login</a>
+        </form>
+        <p class="copyright">© Student Management System</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets1/logo.png" type="image/png">
+
+    <title>Student Management System Complete Profile</title>
+    <link rel="stylesheet" href="complete-profile.css">
+</head>
+<body>
+
+    <div class="content">
+        <h2>Complete Your Profile</h2>
+        <form id="profile-form" onsubmit="return validateForm()">
+            <label>Full Name:</label>
+            <input type="text" id="fullname" required>
+
+            <label>Roll Number:</label>
+            <input type="text" id="rollnumber" required>
+
+            <label>Date of Birth:</label>
+            <input type="date" id="dob" required>
+
+            <label>Aadhar Number:</label>
+            <input type="text" id="aadharnumber" required>
+
+            <label>Mobile Number:</label>
+            <input type="text" id="mobilenumber" required>
+
+            <label>Branch:</label>
+            <select id="branch" required></select>
+            
+            <label>Semester:</label>
+            <select id="semester" required></select>
+            
+            <label>Regulation:</label>
+            <select id="regulation" required></select>
+            
+
+            <label>Address:</label>
+            <textarea id="address" required></textarea>
+
+            <button type="button" onclick="submitProfile()">Submit</button>
+        </form>
+    </div>
+
+    <script>
+
+    function validateForm() {
+        // Validate Full Name (only alphabets and spaces)
+        const fullname = document.getElementById("fullname").value;
+        const fullnamePattern = /^[A-Za-z\s]+$/;
+        if (!fullname || !fullnamePattern.test(fullname)) {
+            alert("Full Name must contain only alphabets and spaces.");
+            return false;
+        }
+
+        // Validate Roll Number (pattern: **KA*A0*** where * is a digit)
+        const rollnumber = document.getElementById("rollnumber").value;
+        const rollnumberPattern = /^\d{2}KA\dA0\d{3}$/;
+        if (!rollnumber || !rollnumberPattern.test(rollnumber)) {
+            alert("Roll Number must match the pattern **KA*A0*** where * is any digit.");
+            return false;
+        }
+
+
+        // Validate Date of Birth (past dates only)
+        const dob = document.getElementById("dob").value;
+        const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+        if (!dob || dob > today) {
+            alert("Date of Birth must be a past date.");
+            return false;
+        }
+
+        // Validate Aadhar Number (must be 12 digits)
+        const aadharnumber = document.getElementById("aadharnumber").value;
+        const aadharPattern = /^[0-9]{12}$/;
+        if (!aadharnumber || !aadharPattern.test(aadharnumber)) {
+            alert("Aadhar Number must be a 12-digit number.");
+            return false;
+        }
+
+        // Validate Mobile Number (must be 10 digits)
+        const mobilenumber = document.getElementById("mobilenumber").value;
+        const mobilePattern = /^[0-9]{10}$/;
+        if (!mobilenumber || !mobilePattern.test(mobilenumber)) {
+            alert("Mobile Number must be a 10-digit number.");
+            return false;
+        }
+
+        // Validate Branch (only alphabets)
+        const branch = document.getElementById("branch").value;
+        if (!branch) {
+            alert("Branch is required.");
+            return false;
+        }
+
+       // Validate Semester (format: "sem 1" to "sem 8")
+        const semester = document.getElementById("semester").value;
+        if (!semester) {
+            alert("Semester is required.");
+            return false;
+        }
+
+
+        // Validate Regulation (pattern: R ** where * is a digit)
+        const regulation = document.getElementById("regulation").value;
+        if (!regulation) {
+            alert("Regulation is required.");
+            return false;
+        }
+
+
+        // Validate Address (cannot be empty)
+        const address = document.getElementById("address").value;
+        if (!address) {
+            alert("Address is required.");
+            return false;
+        }
+
+        return true;  // Proceed with form submission if all fields are valid
+    }
+
+    async function submitProfile() {
+    if (!validateForm()) {
+        return;  // Stop form submission if validation fails
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        alert("Not authorized! Please log in.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    const response = await fetch("http://localhost:5000/dashboard", {
+        method: "GET",
+        headers: {
+            "Authorization": token
+        }
+    });
+
+    const data = await response.json();
+    const profileData = {
+        roll_number: document.getElementById("rollnumber").value,
+        username: localStorage.getItem('username'),  // Get username from localStorage
+        full_name: document.getElementById("fullname").value,
+        date_of_birth: document.getElementById("dob").value,
+        aadhar_number: document.getElementById("aadharnumber").value,
+        email: localStorage.getItem('email'),  // Get email from localStorage
+        mobile_number: document.getElementById("mobilenumber").value,
+        address: document.getElementById("address").value,        
+        regulation_id: document.getElementById("regulation").value,
+        semester_id: document.getElementById("semester").value,
+        branch_id: document.getElementById("branch").value
+    };
+    console.log(profileData)
+
+    try {
+        const response = await fetch("http://localhost:5000/complete-profile", {  
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(profileData)
+        });
+
+        const text = await response.text();
+
+        try {
+            const result = JSON.parse(text);
+            if (result.success) {
+                alert("Profile updated successfully!");
+                window.location.href = "admin.html";
+            } else {
+                alert(result.message || "Something went wrong!");
+            }     
+        } catch (parseError) {
+            console.error("Failed to parse JSON:", parseError);
+            alert("Server response is not valid JSON:\n" + text);
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Unexpected error occurred while submitting profile.", error.sqlmessage);
+    }
+}
+
+    async function loadDropdowns() {
+    try {
+        // Fetch and populate semesters
+        const semResponse = await fetch("http://localhost:5000/api/semesters");
+        const semesters = await semResponse.json();
+        const semesterSelect = document.getElementById("semester");
+        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+        semesters.forEach(sem => {
+            semesterSelect.innerHTML += `<option value="${sem.id}">${sem.name}</option>`;
+        });
+
+        // Fetch and populate branches
+        const branchResponse = await fetch("http://localhost:5000/api/branches");
+        const branches = await branchResponse.json();
+        const branchSelect = document.getElementById("branch");
+        branchSelect.innerHTML = '<option value="">Select Branch</option>';
+        branches.forEach(branch => {
+            branchSelect.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
+        });
+
+        // Fetch and populate regulations
+        const regResponse = await fetch("http://localhost:5000/api/regulations");
+        const regulations = await regResponse.json();
+        const regulationSelect = document.getElementById("regulation");
+        regulationSelect.innerHTML = '<option value="">Select Regulation</option>';
+        regulations.forEach(reg => {
+            regulationSelect.innerHTML += `<option value="${reg.id}">${reg.name}</option>`;
+        });
+
+    } catch (error) {
+        console.error("Error loading dropdowns:", error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email');
+    console.log(username,email)
+
+});
+// Call the function when the page loads
+window.onload = loadDropdowns;
+
+    </script>
+
+</body>
+</html>

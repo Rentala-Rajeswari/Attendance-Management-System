@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="icon" href="/assets1/logo.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <title>Student Management System Teacher Dashboard</title>
+    <link rel="stylesheet" href="teacher.css">
+</head>
+<body>
+    <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Teacher Dashboard</h2>
+        <ul>
+            <li><a href="#dashboard" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#teaching-subjects" onclick="showSection('teaching-subjects')"><i class="fas fa-chalkboard-teacher"></i>
+                 Teaching-Subjects</a></li>
+            <li><a href="#generate-attendance" onclick="showSection('generate-attendance')"><i class="fas fa-check-square"></i> Attendance Entry</a></li>
+
+            <li><a href="#attendance" onclick="showSection('attendance')"><i class="fas fa-calendar-check"></i>Attendance Report</a></li>
+            <!-- <li><a href="#" onclick="showSection('performance')">Academic Performance</a></li> -->
+            <li><a href="#" class="logout-btn"><i data-lucide="log-out"> </i> Log Out</a></li>
+        </ul>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+        <h1 align="center">Teacher Dashboard</h1>
+         <!-- Section 1: Dashboard -->
+         <section id="dashboard" class="dashboard-section" >
+            <div class="dashboard-container">
+                <!-- Top Section: Teaching Stats (Side by Side) -->
+                <div class="top-section">
+                    <div class="stats-card" style="background-color: rgb(236, 174, 206);">
+                        <h2 style ="justify-content: center;"><i class="fas fa-chalkboard-teacher" style="font-size: 52px;"> </i></h2>
+
+                        <h3>Total Teaching Classes</h3>
+                        <p id="classCount">0</p>
+                    </div>
+                    <div class="stats-card" style="background-color: rgb(156, 239, 239);">
+                        <h2 style ="justify-content: center;"><i class="fas fa-book" style="font-size: 52px;"> </i></h2>
+                        <h3>Total Teaching Subjects</h3>
+                        <p id="subjectCount">0</p>
+                    </div>
+                </div>
+            
+                <!-- Bottom Section: User Details (Left) & Teaching Subjects (Right) -->
+               
+                <div class="bottom-section">
+                    <!-- Left: User Details -->
+                    <div class="left-section">
+                        <div class="stats-card" style="background-color: rgb(240, 240, 162);">
+                            <h2 style ="justify-content: center;"><i data-lucide="circle-user" style="width: 50px; height: 50px;"> </i></h2>
+
+                            <h3>Teacher Details</h3>
+                            <div id="userDetails">
+                                <p><strong>Username:</strong> <span id="username"></span></p>
+                                <p><strong>Email:</strong> <span id="email"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    
+                </div>
+            
+            </div>
+            
+        </section>
+
+        <!-- Right: Teaching Subjects Table -->
+        <section id="teaching-subjects" class="teaching-subjects-section" >
+            <h2 style="color: rgb(253, 9, 176);"><i class="fas fa-chalkboard-teacher" style="margin-right: 8px;"></i>Teaching Subjects</h2>
+            <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Regulation</th>
+                            <th>Branch</th>
+                            <th>Semester</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherSubjectsTableBody">
+                        <!-- Data will be inserted here dynamically -->
+                    </tbody>
+                </table>
+        </section>
+        
+
+        <!-- Section 2:Generate-Attendance  -->
+        <section id="generate-attendance" class="attendance-section" style="display: none;">
+            <h2 style="color: #4caf50; font-size: 26px;">
+                <i class="fas fa-calendar-check" style="margin-right: 8px;"></i> Attendance Entry Sheet
+              </h2>
+              
+            <p><b> subject and generate attendance sheet.</b></p>
+            
+            <form id="subject-form">
+
+                <div class="filter-section">
+                    <label for="Regulation">Regulation:</label>
+                    <select id="Regulation">
+                        <option value="">Select Regulation</option>
+                    </select>
+    
+                    <label for="semester">Semester:</label>
+                    <select id="semester">
+                        <option value="">Select Semester</option>
+                    </select>
+    
+                    <label for="branch">Branch:</label>
+                    <select id="branch" onchange="loadSubjects({
+                        regulationId: 'Regulation',
+                        semesterId: 'semester',
+                        branchId: 'branch',
+                        targetDropdownId: 'subject-name'
+                    })">
+                        <option value="">Select Branch</option>
+                    </select>
+                    
+                    
+                    <label>Subject Name:</label>
+                    <select id="subject-name" required>
+                        <option value=''>Select Subject</option>
+                    </select> 
+    
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" required/>
+                    
+                    <button id="generateBtn">Generate Sheet</button>
+                </div>    
+            </form>
+            <div class="attendance-container">
+                <h2>Attendance Sheet</h2>
+                <table id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button id="submitAttendance" style="display:none;" onclick="submitAttendance()">Submit Attendance</button>
+            </div>   
+        </section>
+       
+
+
+        <!-- Section 3: Attendance Report-->
+        <section id="attendance" class="attendance-section" style="display: none;">
+            <h2 style="color: crimson; font-size: 26px;">
+                <i class="fas fa-calendar-check"></i> Track Attendance Records
+            </h2>
+            
+            <p style="font-weight: bold;">Track the attendance of your students</p>              
+                <form id="user-form">        
+                    <select id="reportRegulation" ></select>
+                    <select id="reportBranch"></select>
+                    <select id="reportSemester" onchange="loadSubjects({
+                        regulationId: 'reportRegulation',
+                        semesterId: 'reportSemester',
+                        branchId: 'reportBranch',
+                        targetDropdownId: 'reportSubject'
+                    })"></select>
+                    
+                    <select id="reportSubject">
+                        <option value="">All Subjects</option>
+                    </select>
+                    <input type="date" id="fromDate">
+                    <input type="date" id="toDate">
+                    <input type="number" id="minPercent" placeholder="Min %" min="0" max="100">
+                    <input type="number" id="maxPercent" placeholder="Max %" min="0" max="100">
+                    <button onclick="generateReport(event)">Generate Report <i data-lucide="download">  </i></button>
+                </form>
+                <table id="reportTable" border="1" style="margin-top: 20px; display: none;">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Present Days</th>
+                            <th>Total Days</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div style="display: flex; justify-content: flex-end; ">
+                    <button onclick="downloadExcel()"  style=" background-color: #217346; color: white; padding: 8px 16px; border: none; border-radius: 5px; ">
+                        <i class="fas fa-file-excel"></i> Download Sheet
+                    </button></div>
+        </section>
+        
+    </div>
+    </div>
+
+    <script>
+        // This line is important to replace all <i data-lucide="..."> with SVGs
+        lucide.createIcons();
+      </script>
+    <script src="teacher.js"></script>
+</body>
+</html>

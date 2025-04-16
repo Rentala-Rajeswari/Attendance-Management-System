@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets1/logo.png" type="image/png">
+
+    <title>Student Management System Admin Dashboard</title>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div class="container">
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="#dashboard" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i>  Dashboard</a></li>
+            <!-- <li><a href="#user-management" onclick="showSection('user-management')"><i data-lucide="user-cog"></i>  User Management</a></li> -->
+            <li><a href="#" onclick="toggleSubMenu(event, 'user-submenu')"><i data-lucide="user-cog"></i> User Management <span class="arrow">▶</span></a>
+                <ul id="user-submenu" style="display: none;">
+                    <li><a href="#user-management" onclick="showSection('user-management')">- Manage-user</a>
+                    <li><a href="#addstudent" onclick="showSection('addstudent')">- Add Student</a>
+            
+                </ul>
+            </li>
+            <li><a href="#" onclick="toggleSubMenu(event, 'subject-submenu')"><i data-lucide="notebook-pen"></i>  Subject Management <span class="arrow">▶</span></a>
+                <ul id="subject-submenu" style="display: none;">
+                    <li><a href="#manage-regulations" onclick="showSection('manage-regulations')">- Manage Regulations</a>
+                    <li><a href="#manage-branches" onclick="showSection('manage-branches')">- Manage Branches</a>
+                    <li><a href="#manage-subjects" onclick="showSection('manage-subjects')">- Manage Subjects</a>
+                </ul>
+            </li>
+            <li><a href="#upgrade-sem" onclick="showSection('upgrade-sem')"><i data-lucide="circle-fading-arrow-up"> </i>  Upgrade Sem</a></li>
+            <li><a href="#subject-allocation" onclick="showSection('subject-allocation')"><i class="fas fa-chalkboard-teacher"></i>  Teacher Allocation</a></li>
+            <li><a href="#attendance" onclick="showSection('attendance')"><i class="fas fa-calendar-check"></i>   Attendance Report</a></li>
+            <li ><a href="#" class="logout-btn"><i data-lucide="log-out"> </i>  Log Out</a></li>
+        </ul>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+        <h1 align="center" >Admin Dashboard</h1>
+         <!-- Section 1: Dashboard -->
+         <section id="dashboard" class="dashboard-section">
+           
+            <div class="stats-section">
+            <div class="stats-card" style="background-color: rgb(236, 174, 206);">
+                <h2 style ="justify-content: center;"><i data-lucide="users-round" style="width: 50px; height: 50px;"> </i></h2>
+                <h3>Total Teachers</h3>
+                <p id="teachers-count">0</p>
+            </div>
+            <div class="stats-card" style="background-color: rgb(156, 239, 239);">
+                <h2 style ="justify-content: center;"><i data-lucide="users" style="width: 50px; height: 50px;"> </i></h2>
+                <h3>Total Students</h3>
+                <p id="students-count">0</p>
+            </div>    
+        </div>
+        <div class="admin-container" >
+            <div class="stats-card" id="admin-detail" style="background-color: rgb(240, 240, 162);">
+                <h2 style ="justify-content: center;"><i data-lucide="circle-user" style="width: 50px; height: 50px;"> </i></h2>
+                <h3>Admin Details</h3>
+
+                <div id="userDetails">
+                    <p><strong>Username:</strong> <span id="username"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+                </div>
+            </div>
+        </div>
+        
+        </section>
+
+        
+        
+
+        <!-- Section 2: User Management (CRUD for Student/Teacher) -->
+        <section id="user-management" class="user-management-section" style="display: none;">
+            <h2 style="color: rgb(253, 9, 176);"><i class="fas fa-user-shield"></i> User Management</h2>
+
+            <select id="userType">
+                <option value="admin">Admin</option>
+                <option value="teacher">Teacher</option>
+            </select>
+            <input type="text" id="username1" placeholder="Username">
+            <input type="email" id="email1" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+
+            <button onclick="addUser()"><i class="fas fa-user-plus"></i></button>
+
+            <br><br>
+            <h3 style="color: #673ab7; font-size: 22px; margin-top: 30px;">
+                <i class="fas fa-users-cog"></i> User Control Center
+            </h3>
+            
+
+            <input type="text" id="searchInput" placeholder="Search by username or email">
+            <button onclick="searchUsers()"><i class="fas fa-search"></i></button>
+            <br>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>User Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+            <div id="pagination" style="margin-top: 10px;">
+                <!-- Pagination buttons will be injected here -->
+            </div>
+            
+        </section>
+
+
+        <section  id="addstudent" class="addstudent-section" style="display: none;">
+            <h2 style="color: rgb(253, 9, 176);"><i class="fas fa-user-shield"></i> Add Student</h2>
+
+            <select id="userType2">
+                <option value="student">Student</option>   
+            </select>
+            <input type="text" id="username2" placeholder="Username">
+            <input type="email" id="email2" placeholder="Email">
+            <input type="password" id="password2" placeholder="Password">
+            <button onclick="addStudents()"><i class="fas fa-user-plus"></i> Complete Profile</button>
+
+            <br><br>
+            <h3 style="color: #673ab7; font-size: 22px; margin-top: 30px;">
+                <i class="fas fa-users-cog"></i> Student Control Center
+            </h3>
+
+            <input type="text" id="searchInput1" placeholder="Search by roll number or email">
+            <button onclick="searchStudents()"><i class="fas fa-search"></i></button>
+            <br>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Name</th>
+                        <th>Full Name</th>
+                        <th>Roll Number</th>
+                        <th>Regulation</th>
+                        <th>Semester</th>
+                        <th>Branch</th>
+
+                        
+                    </tr>
+                </thead>
+                <tbody id="studentTable"></tbody>
+            </table>
+            <div id="pagination5" style="margin-top: 10px;">
+                <!-- Pagination buttons will be injected here -->
+            </div>
+
+
+        </section>
+     
+        
+          
+
+        <!-- Section 3: Subject Management -->
+        <!-- Section 3-1: Manage Regulations -->
+        <section id="manage-regulations" class="manage-regulations-section" style="display: none;">
+            <h2 style="color: #ff5722; font-size: 26px; margin-bottom: 20px;">
+                <i class="fas fa-gavel"></i> Manage Academic Regulations
+            </h2>
+                        <input type="text" id="regulationName" placeholder="Enter Regulation">
+            <button onclick="addRegulation()"><i class="fas fa-plus"></i></button>
+            <br><br>
+            <h3 style="color: #58c132; font-size: 22px; margin-top: 30px;">
+                <i class="fas fa-pencil-alt"></i> Regulation Listing
+            </h3>
+                        <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Regulation Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="regulationTable"></tbody>
+            </table>
+        </section>
+
+        
+        <!-- Section 3-2: Manage Branches -->
+        <section id="manage-branches" class="manage-branches-section" style="display: none;">
+            <h2 style="color: #14b6b1; font-size: 26px; margin-bottom: 20px;">
+                <i class="fas fa-sitemap"></i> Branch Control Center
+            </h2>
+                        <input type="text" id="branchName" placeholder="Enter Branch">
+            <button onclick="addBranch()"><i class="fas fa-plus"></i></button>
+            <h3 style="color: #ff22b2; font-size: 22px; margin-top: 30px;">
+                <i class="fas fa-school"></i> Branch Listing
+            </h3>
+                        <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Branch Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="branchTable"></tbody>
+            </table>
+        </section>
+
+        <!-- Section 3-3: Manage Subjects -->
+        <section id="manage-subjects" class="manage-subjects-section" style="display: none;">
+            <h2 style="color:crimson;">Subject Management</h2>
+    
+            <select id="regulationSelect"></select>
+            <select id="semesterSelect"></select>
+            <select id="branchSelect"></select>
+            <input type="text" id="subjectName" placeholder="Subject Name">
+            <button onclick="addSubject()"><i class="fas fa-plus"></i> Add</button>
+    
+            <br>
+            <h3 style="color: #673ab7; font-size: 22px; margin-top: 30px;">
+                <i class="fas fa-book"></i> Curriculum Subjects
+            </h3>
+            
+            <input type="text" id="searchSubject" placeholder="Search by Subject Name">
+            <button onclick="searchSubjects()" style="background-color: green"><i class="fas fa-search"></i></button>
+            <br>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Subject Name</th>
+                        <th>Regulation</th>
+                        <th>Semester</th>
+                        <th>Branch</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="subjectTable"></tbody>
+            </table>
+            <div id="paginationSubject" style="margin-top: 10px;">
+                
+            </div>
+        </section>
+    
+       <!-- Section 4: Upgrade Semester -->
+        <section id="upgrade-sem" class="upgrade-semester" style="display: none;">
+            <h2 style="color: #ff5722; font-size: 26px;">
+                <i class="fas fa-rocket"></i> Semester Promotion
+            </h2>
+            
+                <label for="branchSelect3">Branch:</label>
+                <select id="branchSelect3" onchange="loadLastUpdatedDate(this.value)"></select>
+
+                <label for="semesterSelect3">Current Semester:</label>
+                <select id="semesterSelect3">
+                    <option value="">Select Semester</option>
+                </select>
+
+                <button id="upgradeSemesterBtn">Upgrade Students  <i data-lucide="circle-fading-arrow-up"> </i></button>
+
+                <div id="lastUpdatedContainer" class="last-updated-container">
+                    Loading last update details...
+                </div>
+        </section>
+
+    
+
+
+         <!-- Section 5: Subject Allocation -->
+         <section id="subject-allocation" class="subject-allocation-section" style="display: none;">
+            <h2 style="color: darkblue; font-size: 26px;">
+                <i class="fas fa-user-tag"></i> Teacher Allocation
+            </h2>
+            
+            <input type="text" id="searchInputt" placeholder="Search...">
+            <button onclick="displayAllocations()" style="background-color:green"><i class="fas fa-search"></i></button>
+            <form id="subject-form">
+
+                <input type="hidden" id="subject-id"> <!-- Hidden Field for ID -->
+                <select id="regulationSelect1" onchange="loadSubjects({ 
+                    regulationId: 'regulationSelect1', 
+                    semesterId: 'semesterSelect1', 
+                    branchId: 'branchSelect1', 
+                    targetDropdownId: 'subjectSelect' 
+                })">
+                </select>
+                            
+                <select id="semesterSelect1" onchange="loadSubjects({
+                    regulationId: 'regulationSelect1',
+                    semesterId: 'semesterSelect1',
+                    branchId: 'branchSelect1',
+                    targetDropdownId: 'subjectSelect'
+                })">
+                </select>
+                            
+                <select id="branchSelect1" onchange="loadSubjects({
+                    regulationId: 'regulationSelect1',
+                    semesterId: 'semesterSelect1',
+                    branchId: 'branchSelect1',
+                    targetDropdownId: 'subjectSelect'
+                  })">
+                  </select>
+                              
+                <select id="subjectSelect"><option value="">select subject</option></select>
+            
+                <select id="teacherSelect"><option value="">select teacher</option></select>
+                <button onclick="allocateSubject(event)">Allocate</button>
+            </form>
+
+
+        
+            <h2 style="color:rgb(197, 132, 19)">Allocated Subjects</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Regulation</th>
+                        <th>Semester</th>
+                        <th>Branch</th>
+                        <th>Teacher</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="allocationTable"></tbody>
+            </table>
+            <div id="pagination1" style="margin-top: 10px;"></div>
+        </section>
+        
+        
+
+         <!-- Section 6: Attendance Report -->
+         <section id="attendance" class="attendance-section" style="display: none;">
+            <h2 style="color: crimson; font-size: 26px;">
+                <i class="fas fa-calendar-check"></i> Track Attendance Records
+            </h2>
+            
+            <p style="font-weight: bold;">Track the attendance of your students</p>                
+                <form id="user-form">        
+                    <select id="reportRegulation" ></select>
+                    <select id="reportBranch"></select>
+                    <select id="reportSemester" onchange="loadSubjects({
+                        regulationId: 'reportRegulation',
+                        semesterId: 'reportSemester',
+                        branchId: 'reportBranch',
+                        targetDropdownId: 'reportSubject'
+                    })"></select>
+                    
+                    <select id="reportSubject">
+                        <option value="">All Subjects</option>
+                    </select>
+                    <input type="date" id="fromDate">
+                    <input type="date" id="toDate">
+                    <input type="number" id="minPercent" placeholder="Min %" min="0" max="100">
+                    <input type="number" id="maxPercent" placeholder="Max %" min="0" max="100">
+                    <button onclick="generateReport(event)">  Generate Report   <i data-lucide="download">  </i></button>
+                </form>
+                
+                <table id="reportTable" border="1" style="margin-top: 20px; display: none;">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Present Days</th>
+                            <th>Total Days</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div style="display: flex; justify-content: flex-end; ">
+                <button onclick="downloadExcel()"  style=" background-color: #217346; color: white; padding: 8px 16px; border: none; border-radius: 5px; ">
+                    <i class="fas fa-file-excel"></i> Download Sheet
+                </button></div>
+                
+        </section>
+    </div>
+</div>
+
+    <script src="admin.js"></script>
+    <script>
+        // This line is important to replace all <i data-lucide="..."> with SVGs
+        lucide.createIcons();
+      </script>
+</body>
+</html>
