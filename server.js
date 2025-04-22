@@ -596,12 +596,36 @@ app.get("/api/student-subjects", (req, res) => {
     });
 });
 
-// Upgrade students' semester
-app.post("/api/upgrade-semester", (req, res) => {
-    const { branch_id, semester_id, excludedRollNumbers } = req.body;
 
-    if (!branch_id || !semester_id) {
-        return res.status(400).json({ error: "Branch ID and Semester ID are required" });
+
+// Upgrade students' semester
+// Endpoint to get all students for the selected regulation, branch, and semester
+app.get("/api/get-students", (req, res) => {
+    const { regulation_id, branch_id, semester_id } = req.query;
+
+    if (!regulation_id || !branch_id || !semester_id) {
+        return res.status(400).json({ error: "Regulation, Branch, and Semester are required" });
+    }
+
+    const sql = `
+        SELECT roll_number, full_name
+        FROM students
+        WHERE regulation_id = ? AND branch_id = ? AND semester_id = ?
+    `;
+    
+    db.query(sql, [regulation_id, branch_id, semester_id], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        res.json({ students: result });
+    });
+});
+
+// Endpoint to upgrade students' semester based on regulation, branch, semester, and excluded roll numbers
+app.post("/api/upgrade-semester", (req, res) => {
+    const { regulation_id, branch_id, semester_id, excludedRollNumbers } = req.body;
+
+    if (!regulation_id || !branch_id || !semester_id) {
+        return res.status(400).json({ error: "Regulation, Branch, and Semester are required" });
     }
 
     const branchQuery = `SELECT name FROM branches WHERE id = ?`;
@@ -626,10 +650,11 @@ app.post("/api/upgrade-semester", (req, res) => {
             END
             WHERE branch_id = ? 
             AND semester_id = ? 
+            AND regulation_id = ?
             ${excludedList}
         `;
 
-        const params = [branch_id, semester_id, ...excludedRollNumbers];
+        const params = [branch_id, semester_id, regulation_id, ...excludedRollNumbers];
 
         db.query(sql, params, (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -655,26 +680,27 @@ app.post("/api/upgrade-semester", (req, res) => {
 });
 
 
-// Fetch last 4 updated details
+// Get all semester upgrade updates, filtered by branch if provided
 app.get("/api/get-last-updated", (req, res) => {
     const { branch_id } = req.query;
 
-    let sql = `SELECT su.branch_name, su.excluded_roll_numbers, 
-                      DATE_FORMAT(su.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at, 
-                      su.previous_semester_id, su.upgraded_to,
-                      ps.name AS previous_semester_name, us.name AS upgraded_to_name
-               FROM semester_updates su
-               LEFT JOIN semesters ps ON su.previous_semester_id = ps.id
-               LEFT JOIN semesters us ON su.upgraded_to = us.id`;
-
-    let params = [];
+    let sql = `
+        SELECT su.branch_name, su.excluded_roll_numbers, 
+               DATE_FORMAT(su.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at, 
+               su.previous_semester_id, su.upgraded_to,
+               ps.name AS previous_semester_name, us.name AS upgraded_to_name
+        FROM semester_updates su
+        LEFT JOIN semesters ps ON su.previous_semester_id = ps.id
+        LEFT JOIN semesters us ON su.upgraded_to = us.id
+    `;
+    const params = [];
 
     if (branch_id) {
-        sql += " WHERE su.branch_id = ? ORDER BY su.updated_at DESC LIMIT 4";
+        sql += " WHERE su.branch_id = ?";
         params.push(branch_id);
-    } else {
-        sql += " ORDER BY su.updated_at DESC LIMIT 4";
     }
+
+    sql += " ORDER BY su.updated_at DESC"; // Removed LIMIT 4
 
     db.query(sql, params, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -685,19 +711,19 @@ app.get("/api/get-last-updated", (req, res) => {
 
         const messages = result.map(row => {
             const excludedList = row.excluded_roll_numbers !== "None"
-                ? row.excluded_roll_numbers.split(", ").map(num => ` - ${num}`).join("\n")
+                ? row.excluded_roll_numbers
                 : "None";
 
             return `Last Updated On: ${row.updated_at}
 Branch: ${row.branch_name}
 Upgraded: ${row.previous_semester_name} ➜ ${row.upgraded_to_name}
-Excluded Roll Numbers:
-${excludedList}`;
+Excluded Roll Numbers: ${excludedList}`;
         });
 
         res.json({ message: messages });
     });
 });
+
 
 
 

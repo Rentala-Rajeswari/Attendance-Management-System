@@ -258,26 +258,53 @@
             </div>
         </section>
     
-       <!-- Section 4: Upgrade Semester -->
+        <!-- Section 4: Upgrade Semester -->
         <section id="upgrade-sem" class="upgrade-semester" style="display: none;">
             <h2 style="color: #ff5722; font-size: 26px;">
                 <i class="fas fa-rocket"></i> Semester Promotion
             </h2>
             
-                <label for="branchSelect3">Branch:</label>
-                <select id="branchSelect3" onchange="loadLastUpdatedDate(this.value)"></select>
+            <label for="regulationSelect3">Regulation:</label>
+            <select id="regulationSelect3" onchange="loadStudents()"></select>
 
-                <label for="semesterSelect3">Current Semester:</label>
-                <select id="semesterSelect3">
-                    <option value="">Select Semester</option>
+            <label for="branchSelect3">Branch:</label>
+            <select id="branchSelect3" onchange="loadStudents();"></select>
+
+            <label for="semesterSelect3">Current Semester:</label>
+            <select id="semesterSelect3" onchange="loadStudents()">
+                <option value="">Select Semester</option>
+            </select>
+
+            <div id="studentsListContainer">
+                <table id="studentsTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Roll Number</th>
+                            <th>Full Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Students will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <button id="upgradeSemesterBtn">Upgrade Students <i data-lucide="circle-fading-arrow-up"></i></button>
+            
+            <div class="filter-dropdown-container">
+                <select id="branchSelect4" onchange="loadLastUpdatedDate(this.value)">
+                    
                 </select>
+            </div>
+            
 
-                <button id="upgradeSemesterBtn">Upgrade Students  <i data-lucide="circle-fading-arrow-up"> </i></button>
-
-                <div id="lastUpdatedContainer" class="last-updated-container">
-                    Loading last update details...
-                </div>
+            <div id="lastUpdatedContainer" class="last-updated-container">
+                Loading last update details...
+            </div>
         </section>
+
+
 
     
 

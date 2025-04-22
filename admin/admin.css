@@ -144,14 +144,22 @@ h1 {
     font-size: 2rem;
     color: #333;
 }
-
 .upgrade-semester {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    display: block; /* Or remove this line entirely */
+    background-color: #fdf3ff; /* Or any color you want */
+    padding: 40px 20px;
     text-align: center;
 }
+
+
+.filter-dropdown-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
 
 table {
     width: 100%;

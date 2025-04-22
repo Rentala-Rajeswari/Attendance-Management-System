@@ -157,8 +157,6 @@ function addRegulation() {
         .catch(error => console.error("Error fetching regulations:", error));
 }
 
-
-
 // Function to delete a regulation
 function deleteRegulation(id) {
     if (confirm("Are you sure you want to delete this regulation?")) {
@@ -249,7 +247,6 @@ function addBranch() {
         .catch(error => console.error("Error adding branch:", error));
 }
 
-
 // Function to delete a branch
 function deleteBranch(id) {
     if (confirm("Are you sure you want to delete this branch?")) {
@@ -289,6 +286,14 @@ function loadRegulations() {
             data.forEach(regulation => {
                 regulationSelect2.innerHTML += `<option value="${regulation.id}">${regulation.name}</option>`;
             });
+
+            const regulationSelect3 = document.getElementById("regulationSelect3");
+            regulationSelect3.innerHTML = '<option value="">Select Regulation</option>';
+
+            data.forEach(regulation => {
+                regulationSelect3.innerHTML += `<option value="${regulation.id}">${regulation.name}</option>`;
+            });
+            
         })
 
         .catch(error => console.error("Error loading regulations:", error));
@@ -362,6 +367,12 @@ function loadBranches() {
 
             data.forEach(branch => {
                 branchSelect2.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
+            });
+            const branchSelect4 = document.getElementById("branchSelect4");
+            branchSelect4.innerHTML = '<option value="">Filter by Branch</option>';
+
+            data.forEach(branch => {
+                branchSelect4.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
             });
         })
         .catch(error => console.error("Error loading branches:", error));
@@ -843,36 +854,96 @@ function changePage(direction) {
     currentPage += direction;
     searchUsers();
 }
+
 document.getElementById("upgradeSemesterBtn").addEventListener("click", async function () {
+    const regulation_id = document.getElementById("regulationSelect3").value;
     const branch_id = document.getElementById("branchSelect3").value;
     const semester_id = document.getElementById("semesterSelect3").value;
 
-    if (!branch_id || !semester_id) {
-        return alert("Please select both branch and semester!");
+    if (!regulation_id || !branch_id || !semester_id) {
+        return alert("Please select regulation, branch, and semester!");
     }
 
-    const excludedRollNumbers = prompt("Enter roll numbers to exclude (comma-separated):")
-        .split(",")
-        .map(r => r.trim())
-        .filter(r => r);
+    // Get excluded roll numbers (unchecked checkboxes)
+    const excludedRollNumbers = [];
+    const studentCheckboxes = document.querySelectorAll(".student-checkbox");
+    studentCheckboxes.forEach(checkbox => {
+        if (!checkbox.checked) {
+            excludedRollNumbers.push(checkbox.value);
+        }
+    });
 
     const response = await fetch("http://localhost:5000/api/upgrade-semester", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ branch_id, semester_id, excludedRollNumbers })
+        body: JSON.stringify({ regulation_id, branch_id, semester_id, excludedRollNumbers })
     });
 
     const data = await response.json();
 
     if (response.ok) {
         alert(`Semester upgraded! ${data.updatedRows} students updated.`);
-        branch_id.value=""
-        semester_id.value=""
-        loadLastUpdatedDate(branch_id);
+
+        // Clear the form and table data
+        document.getElementById("regulationSelect3").value = "";
+        document.getElementById("branchSelect3").value = "";
+        document.getElementById("semesterSelect3").value = "";
+        document.getElementById("studentsTable").getElementsByTagName('tbody')[0].innerHTML = ""; // Clear the table
+
+        loadLastUpdatedDate();
     } else {
         alert("Error: " + data.error);
     }
 });
+
+// Load students for the selected regulation, branch, and semester
+async function loadStudents() {
+    const regulation_id = document.getElementById("regulationSelect3").value;
+    const branch_id = document.getElementById("branchSelect3").value;
+    const semester_id = document.getElementById("semesterSelect3").value;
+
+    if (!regulation_id || !branch_id || !semester_id) return;
+
+    const response = await fetch(`http://localhost:5000/api/get-students?regulation_id=${regulation_id}&branch_id=${branch_id}&semester_id=${semester_id}`);
+    const data = await response.json();
+
+    const tbody = document.getElementById("studentsTable").getElementsByTagName('tbody')[0];
+    tbody.innerHTML = ""; // Clear existing data
+
+    if (data.students.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='3'>No students found for the selected criteria.</td></tr>";
+        return;
+    }
+
+    data.students.forEach(student => {
+        const tr = document.createElement("tr");
+
+        // Checkbox for selecting students
+        const tdCheckbox = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("student-checkbox");
+        checkbox.value = student.roll_number;
+        checkbox.checked = true;
+        tdCheckbox.appendChild(checkbox);
+        tr.appendChild(tdCheckbox);
+
+        // Roll number and full name
+        const tdRollNumber = document.createElement("td");
+        tdRollNumber.textContent = student.roll_number;
+        tr.appendChild(tdRollNumber);
+
+        const tdFullName = document.createElement("td");
+        tdFullName.textContent = student.full_name;
+        tr.appendChild(tdFullName);
+
+        tbody.appendChild(tr);
+    });
+}
+
+// Load last updated details on page load
+loadLastUpdatedDate();
+
 
 
 // Function to load last updated details
@@ -884,8 +955,26 @@ async function loadLastUpdatedDate(branch_id = "") {
     container.innerHTML = "";
 
     const table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
 
-    // Table Header
+    // Apply the same styles used in the student table
+    const style = document.createElement("style");
+    style.textContent = `
+        table th, table td {
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        table td:nth-child(4) {
+            max-width: 400px;
+            white-space: normal;       /* allows line break */
+            word-wrap: break-word;     /* breaks long words */
+            overflow-wrap: break-word; /* consistent across browsers */
+        }
+    `;
+    document.head.appendChild(style);
+
     const thead = document.createElement("thead");
     thead.innerHTML = `
         <tr>
@@ -905,19 +994,27 @@ async function loadLastUpdatedDate(branch_id = "") {
         const updated = lines[0]?.replace("Last Updated On: ", "") || "-";
         const branch = lines[1]?.replace("Branch: ", "") || "-";
         const semester = lines[2]?.replace("Upgraded: ", "") || "-";
-        const excluded = lines[3]?.replace("Excluded Roll Numbers:", "").trim();
+        let excluded = lines[3]?.replace("Excluded Roll Numbers:", "").trim() || "-";
 
-        // If "None" is present, treat it as no excluded roll numbers
-        const excludedText = excluded && excluded !== "None" ? excluded : "-";
+        let excludedRolls = excluded
+            .split(",")
+            .map(r => r.trim())
+            .filter(r => r && r.toLowerCase() !== "none");
+
+        const excludedText = excludedRolls.length > 0 ? excludedRolls.join(", ") : "-";
 
         const tr = document.createElement("tr");
 
-        // Loop through the data and create td for each row
-        [updated, branch, semester, excludedText].forEach(text => {
+        [updated, branch, semester].forEach(text => {
             const td = document.createElement("td");
             td.textContent = text;
             tr.appendChild(td);
         });
+
+        const tdExcluded = document.createElement("td");
+        tdExcluded.textContent = excludedText;
+        tdExcluded.title = excludedText;
+        tr.appendChild(tdExcluded);
 
         tbody.appendChild(tr);
     });
@@ -1072,8 +1169,6 @@ async function fetchStudents(query = "", page = 1) {
     try {
         const res = await fetch(`http://localhost:5000/api/students-profile?search=${encodeURIComponent(query)}&page=${page}&limit=${pageSize}`);
         const data = await res.json();
-
-        console.log("API Response:", data);
 
         if (!Array.isArray(data.students)) {
             console.error("Unexpected response format:", data);
